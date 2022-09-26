@@ -1,0 +1,149 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:youtube_downloader/cubit/cubit.dart';
+import 'package:youtube_downloader/cubit/states.dart';
+import 'package:youtube_downloader/modules/video/video_screen.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+
+class BuildVideoMetaDataItem extends StatelessWidget {
+  const BuildVideoMetaDataItem({Key? key, required this.video})
+      : super(key: key);
+  final Video video;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          video.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Text(
+          video.description,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          children: [
+            const Icon(
+              FontAwesomeIcons.heart,
+              color: Colors.red,
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            Text(
+              video.watchPage!.videoLikeCount.toString(),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 16, color: Colors.red),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class BuildButtomAppBarItem extends StatelessWidget {
+  BuildButtomAppBarItem({
+    Key? key,
+    required this.icon,
+    required this.label,
+    this.index,
+  }) : super(key: key);
+  final IconData icon;
+  final String label;
+  int? index;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<MainCubit, MainStates>(
+      listener: (context, state) {},
+      builder: (context, state) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: MainCubit.get(context).currentIndex == index
+                ? Colors.red
+                : Colors.grey,
+          ),
+          if (MainCubit.get(context).currentIndex == index)
+            Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class BuildDownloadedItem extends StatelessWidget {
+  const BuildDownloadedItem({Key? key, required this.file, required this.index})
+      : super(key: key);
+  final File file;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: Text(
+            file.uri.pathSegments.last.replaceAll('.mp4', ''),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Expanded(
+            flex: 1,
+            child: MaterialButton(
+              color: Colors.red,
+              onPressed: () {
+                MainCubit.get(context).playVideo(index);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VideoScreen(index: index),
+                  ),
+                );
+              },
+              child: const Text(
+                'Watch',
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            )),
+      ],
+    );
+  }
+}
