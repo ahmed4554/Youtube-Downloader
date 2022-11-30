@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
@@ -64,8 +66,32 @@ class SearchScreen extends StatelessWidget {
                         child: Lottie.asset('assets/lotties/loading.json',
                             repeat: false),
                       )
-                    : BuildVideoMetaDataItem(
-                        video: c.video as Video,
+                    : Column(
+                        children: [
+                          Dismissible(
+                            key: ValueKey<Video>(c.video as Video),
+                            onDismissed: (DismissDirection direction) {
+                              c.clearSearchItem();
+                            },
+                            child: BuildVideoMetaDataItem(
+                              video: c.video as Video,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 25,
+                          ),
+                          if (c.progress != 0)
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: LinearProgressIndicator(
+                                value: c.progress,
+                                color: Colors.red,
+                                backgroundColor:
+                                    Colors.red.withOpacity(.3),
+                                minHeight: 20,
+                              ),
+                            ),
+                        ],
                       ),
               ],
             ),

@@ -31,3 +31,13 @@ class PauseVideo extends MainStates {}
 class ChangeCurrentIndexState extends MainStates {}
 
 class GetCachedVideosState extends MainStates {}
+
+class GetThumnailsSuccess extends MainStates {}
+
+class GetThumnailsError extends MainStates {}
+
+class FileDeletedState extends MainStates {}
+
+class ClearSearchItemState extends MainStates {}
+
+class ProgressUpadateState extends MainStates {}

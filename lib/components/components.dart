@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,8 +10,10 @@ import 'package:youtube_downloader/modules/video/video_screen.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class BuildVideoMetaDataItem extends StatelessWidget {
-  const BuildVideoMetaDataItem({Key? key, required this.video})
-      : super(key: key);
+  const BuildVideoMetaDataItem({
+    Key? key,
+    required this.video,
+  }) : super(key: key);
   final Video video;
 
   @override
@@ -19,6 +22,20 @@ class BuildVideoMetaDataItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Material(
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            borderRadius: BorderRadius.circular(20),
+            elevation: 5,
+            shadowColor: Colors.red,
+            child: Image(
+              image: NetworkImage(
+                'https://img.youtube.com/vi/${video.id}/0.jpg',
+              ),
+              fit: BoxFit.fill,
+            )),
+        const SizedBox(
+          height: 15,
+        ),
         Text(
           video.title,
           maxLines: 1,
@@ -105,44 +122,65 @@ class BuildButtomAppBarItem extends StatelessWidget {
 }
 
 class BuildDownloadedItem extends StatelessWidget {
-  const BuildDownloadedItem({Key? key, required this.file, required this.index})
+  const BuildDownloadedItem(
+      {Key? key, required this.file, required this.index, required this.image})
       : super(key: key);
   final File file;
+  final String image;
   final int index;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          flex: 3,
-          child: Text(
-            file.uri.pathSegments.last.replaceAll('.mp4', ''),
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+        Material(
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            borderRadius: BorderRadius.circular(20),
+            elevation: 5,
+            shadowColor: Colors.red,
+            child: Image(
+              image: FileImage(
+                File(image),
+              ),
+              fit: BoxFit.fill,
+            )),
+        const SizedBox(
+          height: 15,
+        ),
+        Text(
+          file.uri.pathSegments.last.replaceAll('.mp4', ''),
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        Container(
+          height: 40,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+          width: double.infinity,
+          child: MaterialButton(
+            height: 40,
+            color: Colors.red,
+            onPressed: () {
+              MainCubit.get(context).playVideo(index);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => VideoScreen(index: index),
+                ),
+              );
+            },
+            child: const Text(
+              'Watch',
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ),
         ),
-        Expanded(
-            flex: 1,
-            child: MaterialButton(
-              color: Colors.red,
-              onPressed: () {
-                MainCubit.get(context).playVideo(index);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => VideoScreen(index: index),
-                  ),
-                );
-              },
-              child: const Text(
-                'Watch',
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-            )),
       ],
     );
   }
